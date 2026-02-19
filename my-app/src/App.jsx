@@ -6,6 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useEffect } from 'react'
 import WeatherBox from './component/WeatherBox'
 import WeatherButon from './component/WeatherButton';
+import { ClipLoader } from "react-spinners";
 
 
 // 기능 정리
@@ -16,6 +17,11 @@ import WeatherButon from './component/WeatherButton';
 // 5. 현재 위치 버튼을 누르면 다시 현재 위치 기반의 날씨가 나온다. 
 // 6. 데이터를 들고오는 동안 로딩스피너가 돈다.
 function App() {
+  const [weather, setWeather] = useState(null);
+  const cities = ['paris', 'new york', 'tokyo', 'seoul']
+  const [city, setCity] = useState('')
+  const [loading, setLoading] = useState(false)
+
   const getCurrentLocation = () => {
     navigator.geolocation.getCurrentPosition((position) => {
       let lat = position.coords.latitude
@@ -25,27 +31,68 @@ function App() {
   }
 
   const getWeatherByCurrentLocation= async (lat, lon) => {
-    let url = 'https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude={part}&appid={}'
+    let url = 'https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude={part}&appid={API key}&units=metric'
+    setLoading(true)
     let response = await fetch (url)
     let data = await response.json()
+    setWeather(data);
+    setLoading(false)
   }
 
+  const getWeatherByCity = async() => {
+    let url = 'http://api.openweathermap.org/geo/1.0/direct?q=${city},{state code},{country code}&limit={limit}&appid={API key}'
+    setLoading(true)
+    let response = await fetch(url)
+    let data = await response.json()
+    setWeather(data)
+    setLoading(false)
+  }
+
+  // Component 업데이트 역할, city 바뀔때마다 실행
   useEffect(() => {
-    getCurrentLocation()
-  },[]) // 배열 안에 아무것도 없으면 랜더 후 (앱이 실행되자마자) 바로 실행
+    if(city == ""){
+      getCurrentLocation()
+    } else {
+      getWeatherByCity()
+    }
+  },[city]) // 배열 안에 아무것도 없으면 랜더 후 (앱이 실행되자마자) 바로 실행
+
+  // useEffect(() => {
+  //   getWeatherByCity()
+  // },[city]) 
 
   return (
-    <div>
-      <div class="container">
-        <WeatherBox />
-        <WeatherButton />
+  <div>
+    {loading ? (
+      <div className="container">
+        <ClipLoader
+          color={color}
+          loading={loading}
+          cssOverride={override}
+          size={150}
+          aria-label="Loading Spinner"
+          data-testid="loader"
+        />
       </div>
-    </div>
-  );
-}
+    ) : (
+      <div className="container">
+        <WeatherBox weather={weather} />
+        <WeatherButton cities={cities} setCity={setCity} />
+      </div>
+    )}
+  </div>
+);
 
 export default App;
 
 // 구글: get current location javascript 
 // navigator = 자바스크립트 기본 객체 
 // https://www.w3schools.com/html/html5_geolocation.asp
+
+// App이 모든것을 알아야 되고 자식들은 받아써야 한다. 단방향
+
+// https://www.npmjs.com/package/react-spinners
+
+// API 데이터 호출 -> 로딩 스피너 활용해서 사용자 경험 개선
+
+// 1. 미해결: current location 누르면 다시 동작
