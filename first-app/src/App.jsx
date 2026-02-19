@@ -99,3 +99,8 @@ export default App
 // onClick = 콜백 함수 형태로 넣어주기
 
 // 아이템 숫자 연결 -> 배열 
+
+
+// 미해결
+// 1. user -> computer 반대
+// 2. 승패 결과에 따라 테두리 반대
