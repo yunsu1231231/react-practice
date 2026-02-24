@@ -14,6 +14,16 @@ const Navbar = () => {
     navigate("/login");
   }
 
+  const search = (event) => {
+    if(event.key === "Enter"){
+      // 입력한 검색어를 읽어와서
+      let keyword = event.target.value // input안에 있는 값을 읽어오기,, 브라우저 제공 객체인 듯 
+
+      // url을 바꿔준다.
+      navigate(`/?q=${keyword}`)
+    }
+  }
+
   return (
     <div>
       <div>
@@ -38,9 +48,9 @@ const Navbar = () => {
           ))}
         </ul>
 
-        <div>
+        <div className = "search-box">
           <FontAwesomeIcon icon={faSearch} />
-          <input type="text" placeholder="검색" />
+          <input type="text" onKeyPress = {(event) => search} placeholder="검색" />
         </div>
       </div>
     </div>
@@ -52,3 +62,6 @@ export default Navbar;
 // https://fontawesome.com/
 // https://docs.fontawesome.com/web/use-with/react/
 // https://fontawesome.com/icons/user?utm_source=chatgpt.com&s=solid
+
+// 1. onKeyPress
+// 아무키나 누르면 -> 발동
