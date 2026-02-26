@@ -8,10 +8,15 @@ const ProductAll = () => {
   const [query, setQuery] = useSearchParams();
 
   const getProducts = async () => {
-    let searchQuery = query.get('q')
-    let url = `http://localhost:5000/products?q=${searchQuery}`;
+    let searchQuery = query.get('q');
+    console.log(searchQuery)
+    let url = searchQuery
+      ? `http://localhost:5000/products?q=${searchQuery}`
+      : 'http://localhost:5000/products';
     let response = await fetch(url);
+    console.log(response)
     let data = await response.json();
+    console.log(data)
     setProductList(data);
   };
 
